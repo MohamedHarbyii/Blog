@@ -15,7 +15,7 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('/login', 'login');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
 })->middleware('auth:sanctum');
-Route::prefix('posts')->controller(PostController::class)->group(function () {
+Route::middleware('auth:sanctum')->prefix('posts')->controller(PostController::class)->group(function () {
     Route::get('/', 'index');
     Route::post('/create','create')->name('api.posts.create');
     Route::patch('{id}/update','update')->name('api.posts.update');
