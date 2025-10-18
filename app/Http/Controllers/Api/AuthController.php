@@ -16,7 +16,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string',
         ]);
 
         $user = User::create([
@@ -25,9 +25,8 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-        $user->remebmer_token= $token;
-        $user->save();
+        $token = $user->createToken($request->name);
+
         return response()->json([
             'message' => 'User registered successfully',
             'user' => $user,
@@ -39,25 +38,23 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|string|email',
+            'email' => 'required|string|email|exists:users,email',
             'password' => 'required|string',
+
         ]);
 
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+             return response()->json(['message'=>'wrong password'],401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-        $user->remember_token= $token;
-        $user->save();
+        $token = $user->createToken($user->name);
+
         return response()->json([
             'message' => 'Login successful',
             'user' => $user,
-            'token' => $token,
+            'token' => $token->plainTextToken,
         ]);
     }
 

@@ -46,4 +46,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function post(){
+        return $this->hasMany(Post::class);
+    }
+    public function comment(){
+        return $this->hasMany(Comment::class);
+    }
 }

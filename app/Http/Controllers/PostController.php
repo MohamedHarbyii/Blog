@@ -3,43 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
+use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use Illuminate\Routing\Controllers\HasMiddleware;
+
 use function Laravel\Prompts\error;
 use function Pest\Laravel\json;
-
-class PostController extends Controller
+class PostController  extends Controller
 {
+
+
+
     public function index(){
-       $posts= Post::with('user')->get();
-        return $posts;
+       $posts= Post::with('user','comment')->get();
+
+
+        return  PostResource::collection($posts);
+
+
     }
-    public static function find($id){
-        return Post::findOrFail($id);
+    public static function show(Post $post){
+         return new PostResource($post);
     }
-    public function create()
+    public function create(Request $request)
     {
-       $post= Post::create([
+       $post= $request->user()->post()->create([
             'title' => request('title'),
             'content' => request('content'),
         ]);
-        return response()->json(['message'=>'Post created','data'=>$post],201);
+        return new PostResource($post);
     }
-    public function update($id,Request $request){
+    public function update(Post $post,Request $request){
+
+        $this->authorize('update',$post );
         $request->validate([
             'title' => 'required',
             'content' => 'required',
         ]);
-         $post=$this->find($id);
+
 
         $post->update($request->all());
 
-        return response()->json(['message'=>'updated successfully','data'=>$post]);
+        return new postResource($post);
     }
-public function delete($id){
+public function delete(Post $post){
 
-       $post= $this->find($id);
+       $this->authorize('delete',$post);
        $post->delete();
        return response()->json(['message'=>'deleted successfully'],204);
 }
+
+
 }
