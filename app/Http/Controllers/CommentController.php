@@ -16,6 +16,10 @@ class CommentController extends Controller
        return CommentResource::collection($comment);
 
     }
+    public function show(Comment $comment)
+    {
+        return new commentResource($comment);
+    }
     public function create(Request $request)
     {
         $request->validate([
