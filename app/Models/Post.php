@@ -11,10 +11,16 @@ class Post extends Model
     use HasFactory;
 
     protected  $guarded = [];
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
-    public function comment(){
+    public function comment()
+    {
         return $this->hasMany(Comment::class);
+    }
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
     }
 }

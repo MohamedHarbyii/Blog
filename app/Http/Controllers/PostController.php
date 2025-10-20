@@ -17,15 +17,18 @@ class PostController  extends Controller
 
 
     public function index(){
-       $posts= Post::with('user','comment')->get();
+       $posts= Post::with('user','comment','tags')->get();
 
 
         return  PostResource::collection($posts);
 
 
     }
-    public static function show(Post $post){
-         return new PostResource($post);
+    public static function show($id)
+    {
+        $data=Post::with('user','comment','tags')->find($id);
+
+         return new PostResource($data);
     }
     public function create(Request $request)
     {
@@ -33,6 +36,7 @@ class PostController  extends Controller
             'title' => request('title'),
             'content' => request('content'),
         ]);
+       $post->tags()->attach(request('tags'));
         return new PostResource($post);
     }
     public function update(Post $post,Request $request){

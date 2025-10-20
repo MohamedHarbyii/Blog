@@ -22,6 +22,7 @@ class PostResource extends JsonResource
             'created_since'=>$this->created_at->diffForHumans(),
             'author'=>new UserResource($this->whenLoaded('user')),
             'comments'=>CommentResource::collection($this->whenLoaded('comment')),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
         ];
     }
 }
