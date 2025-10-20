@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use function Pest\Laravel\json;
 
 class UserController extends Controller
 {
@@ -39,13 +40,17 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string',
+            'password' => 'sometimes|string',
         ]);
         $user->update($request->all());
         return new UserResource($user);
+
     }
 
     /**
@@ -53,6 +58,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
         $user->delete();
         return response()->json(null, 204);
     }

@@ -14,9 +14,11 @@ use App\Models\Post;
 Route::get("/test/{comment}",function(\App\Models\Comment $comment){
     return $comment->post->user_id;
 });
-Route::prefix("user")->controller(UserController::class)->
+Route::middleware('auth:sanctum')->prefix("user")->controller(UserController::class)->
 group(function(){
     Route::get('/','index');
+    Route::patch('/{user}','update');
+    Route::delete('/{user}','destroy');
 });
 Route::controller(AuthController::class)->group(function(){
     Route::post('/register','register');
