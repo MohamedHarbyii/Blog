@@ -2,41 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+
 use App\Http\Resources\PostResource;
-use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Models\Post;
-use Illuminate\Routing\Controllers\HasMiddleware;
 
-use function Laravel\Prompts\error;
-use function Pest\Laravel\json;
 class PostController  extends Controller
 {
 
-
+public function __construct()
+{
+    $this->middleware('auth:sanctum')->except('index','show');
+}
 
     public function index(){
-       $posts= Post::with('user','comment','tags')->get();
+       $posts= Post::with('user','comment','tags')->paginate(10);
 
 
         return  PostResource::collection($posts);
 
 
     }
-    public static function show($id)
+    public static function show(Post $post)
     {
-        $data=Post::with('user','comment','tags')->find($id);
 
-         return new PostResource($data);
+         $post->comment;
+         $post->user;
+         $post->tags;
+         return new PostResource($post);
     }
-    public function create(Request $request)
+    public function store(Request $request)
     {
        $post= $request->user()->post()->create([
             'title' => request('title'),
             'content' => request('content'),
         ]);
-       $post->tags()->attach(request('tags'));
+       $post->tags;
         return new PostResource($post);
     }
     public function update(Post $post,Request $request){
@@ -52,7 +53,7 @@ class PostController  extends Controller
 
         return new postResource($post);
     }
-public function delete(Post $post){
+public function destroy(Post $post){
 
        $this->authorize('delete',$post);
        $post->delete();

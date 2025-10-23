@@ -3,47 +3,52 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\user\storeUserRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
     // Register API
-    public function register(Request $request)
+    public function register(StoreUserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string',
-        ]);
+
+
+
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+
+
         ]);
 
         $token = $user->createToken($request->name);
 
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => $user,
-            'token' => $token,
-        ], 201);
+        return ['data'=>new UserResource($user),'token'=>$token->plainTextToken];
     }
 
     // Login API
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email|exists:users,email',
-            'password' => 'required|string',
+         $request->validate([
+             'email' => 'required|string|email|exists:users,email',
+             'password' => 'required|string',
+         ]);
 
-        ]);
 
-        $user = User::where('email', $request->email)->first();
+
+         $user = User::where('email', $request->email)->first();
+
+
+
+//
+
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
              return response()->json(['message'=>'wrong password'],401);
@@ -51,16 +56,17 @@ class AuthController extends Controller
 
         $token = $user->createToken($user->name);
 
+
         return response()->json([
-            'message' => 'Login successful',
-            'user' => $user,
-            'token' => $token->plainTextToken,
+            'data'=> [new UserResource($user),'token' => $token->plainTextToken]
+
         ]);
     }
 
     // Logout API
     public function logout(Request $request)
     {
+
         $request->user()->tokens()->delete();
         return response()->json([
             'message' => 'Logged out successfully',

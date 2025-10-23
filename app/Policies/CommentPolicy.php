@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\enRole;
 use App\Models\Post;
 use Illuminate\Auth\Access\Response;
 use App\Models\Comment;
@@ -47,7 +48,7 @@ class CommentPolicy
     public function delete(User $user, Comment $comment): bool
     {
 
-        return $user->id == $comment->user_id||$user->id==$comment->post->user_id||$user->is_admin;
+        return $user->id == $comment->user_id||$user->id==$comment->post->user_id||$user->role==enRole::Admin;
     }
 
     /**

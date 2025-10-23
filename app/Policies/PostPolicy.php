@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\enRole;
 use Illuminate\Auth\Access\Response;
 use App\Models\Post;
 use App\Models\User;
@@ -45,7 +46,7 @@ class PostPolicy
      */
     public function delete(User $user, Post $post): bool
     {
-        return $user->id == $post->user_id||$user->is_admin;
+        return $user->id == $post->user_id||$user->role==enRole::Admin;
     }
 
     /**

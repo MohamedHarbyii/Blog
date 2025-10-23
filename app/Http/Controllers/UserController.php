@@ -1,18 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use function Pest\Laravel\json;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
         return UserResource::collection( User::simplePaginate(10));
@@ -44,9 +42,9 @@ class UserController extends Controller
 
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'sometimes|string',
+            'name' => 'bail|required|string|max:255',
+            'email' => 'bail|required|string|email|unique:users',
+            'password' => 'bail|sometimes|string',
         ]);
         $user->update($request->all());
         return new UserResource($user);

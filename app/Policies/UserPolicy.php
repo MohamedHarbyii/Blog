@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use Illuminate\Auth\Access\Response;
 use App\Models\User;
-
+use App\enRole;
 class UserPolicy
 {
     /**
@@ -44,7 +44,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->id ==$model->id||$user->is_admin;
+        return $user->id ==$model->id||$user->role==enRole::Admin;
     }
 
     /**
