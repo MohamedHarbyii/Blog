@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class UserController extends Controller
 {
@@ -13,7 +14,7 @@ class UserController extends Controller
 
     public function index()
     {
-        return UserResource::collection( User::simplePaginate(10));
+        return UserResource::collection( User::lazy(5));
     }
 
     /**
@@ -54,10 +55,11 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy( User $user)
     {
         $this->authorize('delete', $user);
         $user->delete();
+        PersonalAccessToken::where('tokenable_id', $user->id)->delete();//to delete all the tokens for the user
         return response()->json(null, 204);
     }
 }

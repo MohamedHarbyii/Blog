@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\user\storeUserRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\WelcomeUser;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -26,10 +28,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
 
 
+
         ]);
 
         $token = $user->createToken($request->name);
-
+        Mail::to($user->email)->queue(new WelcomeUser($user));
         return ['data'=>new UserResource($user),'token'=>$token->plainTextToken];
     }
 

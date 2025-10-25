@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::middleware('auth:sanctum')->prefix("user")->controller(UserController::class)->
+Route::prefix("user")->controller(UserController::class)->
 group(function(){
     Route::get('/','index');
-    Route::patch('/{user}','update');
-    Route::delete('/{user}','destroy');
+    Route::patch('/{user}','update')->middleware('auth:sanctum');
+    Route::delete('/{user}','destroy')->middleware('auth:sanctum');
 });
 Route::controller(AuthController::class)->group(function(){
     Route::post('/register','register');
