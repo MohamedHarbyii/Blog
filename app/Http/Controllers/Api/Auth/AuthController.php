@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\user\storeUserRequest;
 use App\Http\Resources\UserResource;
 use App\Mail\WelcomeUser;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\ValidationException;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -74,5 +72,9 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully',
         ]);
+    }
+    public function google_auth(Request $request)
+    {
+        return SocialiteController::loginOrRegister($request, 'google');
     }
 }

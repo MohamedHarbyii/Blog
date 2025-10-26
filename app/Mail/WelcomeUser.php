@@ -31,7 +31,7 @@ class WelcomeUser extends Mailable implements ShouldQueue // (2) ودي
     public function content(): Content
     {
         return new Content(
-            view: 'email', // (5) الفيو اللي هنستخدمه
+            view: 'email',
         );
     }
 }

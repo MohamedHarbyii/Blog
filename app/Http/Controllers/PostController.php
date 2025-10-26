@@ -26,9 +26,9 @@ public function __construct()
     public static function show(Post $post)
     {
 
-         $post->comment;
+         $post->comment->lazy();
          $post->user;
-         $post->tags;
+         $post->tags->lazy();
          return new PostResource($post);
     }
     public function store(Request $request)
